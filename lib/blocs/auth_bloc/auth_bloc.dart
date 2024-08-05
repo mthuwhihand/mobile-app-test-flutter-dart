@@ -1,70 +1,81 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/auth_repository.dart';
-import 'login_event.dart';
-import 'login_state.dart';
+import 'auth_event.dart';
+import 'auth_state.dart';
 import '../../utils/validators.dart';
 
-class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final AuthRepository authenticationRepository;
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final AuthRepository authRepository;
   bool hasInvalidEmailError = false;
   bool hasInvalidPasswordError = false;
 
-  LoginBloc({required this.authenticationRepository}) : super(LoginInitial()) {
-    on<LoginEmailChangedEvent>(_onLoginEmailChanged);
-    on<LoginPasswordChangedEvent>(_onLoginPasswordChanged);
-    on<LoginSubmittedEvent>(_onLoginSubmittedEvent);
+  AuthBloc({required this.authRepository}) : super(AuthLoginInitial()) {
+    on<AuthLoginEmailChangedEvent>(_onAuthLoginEmailChanged);
+    on<AuthLoginPasswordChangedEvent>(_onAuthLoginPasswordChanged);
+    on<AuthLoginSubmittedEvent>(_onAuthLoginSubmittedEvent);
+    on<AuthLogoutRequestedEvent>(_onAuthLogoutRequestedEvent);
   }
 
-  void _onLoginEmailChanged(LoginEmailChangedEvent event, Emitter<LoginState> emit) {
+  void _onAuthLoginEmailChanged(AuthLoginEmailChangedEvent event, Emitter<AuthState> emit) {
     if (hasInvalidEmailError) {
       if (!Validators.isValidEmail(event.email)) {
-        emit(LoginFailureInvalidEmail());
+        emit(const AuthLoginFailureInvalidEmail());
       } else {
-        hasInvalidEmailError = false;
-        emit(LoginInitial());
+        emit(AuthLoginInitial());
       }
     }
   }
 
-  void _onLoginPasswordChanged(LoginPasswordChangedEvent event, Emitter<LoginState> emit) {
+  void _onAuthLoginPasswordChanged(AuthLoginPasswordChangedEvent event, Emitter<AuthState> emit) {
     if (hasInvalidPasswordError) {
       if (!Validators.isValidPassword(event.password)) {
-        emit(LoginFailureInvalidPassword());
+        emit(const AuthLoginFailureInvalidPassword());
       } else {
-        hasInvalidPasswordError = false;
-        emit(LoginInitial());
+        emit(AuthLoginInitial());
       }
     }
   }
 
-  void _onLoginSubmittedEvent(LoginSubmittedEvent event, Emitter<LoginState> emit) async {
-    emit(LoginInProgress());
-
-    // Delay for 2 seconds before proceeding
-    await Future.delayed(Duration(seconds: 2));
+  void _onAuthLoginSubmittedEvent(AuthLoginSubmittedEvent event, Emitter<AuthState> emit) async {
+    emit(AuthLoginInProgress());
 
     // Validate email và password trước khi gọi authenticationRepository
     if (!Validators.isValidEmail(event.email)) {
       hasInvalidEmailError = true;
-      emit(LoginFailureInvalidEmail());
+      emit(const AuthLoginFailureInvalidEmail());
       return;
     }
 
     if (!Validators.isValidPassword(event.password)) {
       hasInvalidPasswordError = true;
-      emit(LoginFailureInvalidPassword());
+      emit(const AuthLoginFailureInvalidPassword());
       return;
     }
 
+    // Delay for 2 seconds before proceeding
+    await Future.delayed(const Duration(seconds: 2));
     try {
-      final success = await authenticationRepository.login(email: event.email, password: event.password);
+      final success = await authRepository.login(email: event.email, password: event.password);
       if (success) {
-        emit(LoginSuccess());
+        emit(AuthLoginSuccess());
       } else {
-        emit(LoginFailure('Invalid email or password'));
+        emit(const AuthLoginFailure('Invalid email or password'));
       }
     } catch (error) {
-      emit(LoginFailure(error.toString()));
+      emit(AuthLoginFailure(error.toString()));
+    }
+  }
+  void _onAuthLogoutRequestedEvent(AuthLogoutRequestedEvent event, Emitter<AuthState> emit) async {
+    emit(AuthLoginInProgress());
+
+    // Delay for 2 seconds before proceeding
+    await Future.delayed(const Duration(seconds: 2));
+
+    try {
+      await authRepository.logout();
+      emit(AuthLogoutSuccess());
+    } catch (error) {
+      emit(AuthLoginFailure(error.toString()));
     }
   }
 }

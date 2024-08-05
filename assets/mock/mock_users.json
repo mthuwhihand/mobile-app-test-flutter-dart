@@ -1,4 +1,17 @@
 [
-  {"userId": "1", "email": "nmthu123@gmail.com", "password": "Abc123"},
-  {"userId": "2", "email": "hihand456@gmail.com", "password": "Abc123"}
+  {
+    "userId": "1",
+    "email": "nmthu123@gmail.com",
+    "password": "Abc1234"
+  },
+  {
+    "userId": "2",
+    "email": "hihand456@gmail.com",
+    "password": "Abc1234"
+  },
+  {
+    "userId": "3",
+    "email": "ngminhthu123@gmail.com",
+    "password": "Abc1234"
+  }
 ]

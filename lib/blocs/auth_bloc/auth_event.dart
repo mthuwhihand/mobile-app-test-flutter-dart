@@ -1,33 +1,40 @@
 import 'package:equatable/equatable.dart';
 
-abstract class LoginEvent extends Equatable {
-  const LoginEvent();
+abstract class AuthEvent extends Equatable {
+  const AuthEvent();
 }
 
-class LoginEmailChangedEvent extends LoginEvent {
+class AuthLoginEmailChangedEvent extends AuthEvent {
   final String email;
 
-  const LoginEmailChangedEvent(this.email);
+  const AuthLoginEmailChangedEvent(this.email);
 
   @override
   List<Object> get props => [email];
 }
 
-class LoginPasswordChangedEvent extends LoginEvent {
+class AuthLoginPasswordChangedEvent extends AuthEvent {
   final String password;
 
-  const LoginPasswordChangedEvent(this.password);
+  const AuthLoginPasswordChangedEvent(this.password);
 
   @override
   List<Object> get props => [password];
 }
 
-class LoginSubmittedEvent extends LoginEvent {
+class AuthLoginSubmittedEvent extends AuthEvent {
   final String email;
   final String password;
 
-  const LoginSubmittedEvent(this.email, this.password);
+  const AuthLoginSubmittedEvent(this.email, this.password);
 
   @override
   List<Object> get props => [email, password];
+}
+
+class AuthLogoutRequestedEvent extends AuthEvent {
+  const AuthLogoutRequestedEvent();
+
+  @override
+  List<Object> get props => [];
 }

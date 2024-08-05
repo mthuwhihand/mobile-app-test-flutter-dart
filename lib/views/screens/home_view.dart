@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/home_bloc/home_bloc.dart';
-import '../blocs/home_bloc/home_event.dart';
-import '../blocs/home_bloc/home_state.dart';
-import '../repositories/movie_repository.dart';
-import '../blocs/auth_bloc/auth_bloc.dart';
-import '../blocs/auth_bloc/auth_event.dart';
+import '../../blocs/home_bloc/home_bloc.dart';
+import '../../blocs/home_bloc/home_event.dart';
+import '../../blocs/home_bloc/home_state.dart';
+import '../../repositories/movie_repository.dart';
+import '../../blocs/auth_bloc/auth_bloc.dart';
+import '../../blocs/auth_bloc/auth_event.dart';
+import '../widgets/network_image_with_fallback.dart';
 
 class HomeView extends StatelessWidget {
   final String type;
+  final String placeholderImage = 'assets/imgs/placeholder.jpg';
 
   const HomeView({super.key, this.type = 'animation'});
 
@@ -23,7 +25,7 @@ class HomeView extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                context.read<AuthBloc>().add(AuthLogoutRequestedEvent());
+                context.read<AuthBloc>().add(const AuthLogoutRequestedEvent());
                 Navigator.pushReplacementNamed(context, '/login');
               },
             ),
@@ -42,12 +44,19 @@ class HomeView extends StatelessWidget {
                   itemCount: state.movies.length + 1,
                   itemBuilder: (context, index) {
                     if (index == state.movies.length) {
-                      context.read<HomeBloc>().add(HomeLoadMoreMovies(type));
-                      return const Center(child: CircularProgressIndicator());
+                      if (context.read<HomeBloc>().hasMoreMovies) {
+                        context.read<HomeBloc>().add(HomeLoadMoreMovies(type));
+                        return const Center(child: CircularProgressIndicator());
+                      } else {
+                        return const Center(child: Text('That\'s all'));
+                      }
                     }
                     final movie = state.movies[index];
                     return ListTile(
-                      leading: Image.network(movie.posterURL),
+                      leading: NetworkImageWithFallback(
+                        imageUrl: movie.posterURL,
+                        placeholderAsset: placeholderImage,
+                      ),
                       title: Text(movie.title),
                     );
                   },

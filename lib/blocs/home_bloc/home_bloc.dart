@@ -1,29 +1,62 @@
-import 'package:rxdart/rxdart.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../repositories/movie_repository.dart';
+import 'home_event.dart';
+import 'home_state.dart';
 
-class HomeBloc {
-  final _itemsController = BehaviorSubject<List<String>>();
+class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  final MovieRepository movieRepository;
+  int _currentPage = 1;
+  final int _pageSize = 10;
+  bool _hasMoreMovies = true;
 
-  Stream<List<String>> get itemsStream => _itemsController.stream;
+  bool get hasMoreMovies => _hasMoreMovies;
 
-  HomeBloc() {
-    _itemsController.sink.add(_generateItems());
+  HomeBloc({required this.movieRepository}) : super(HomeInitial()) {
+    on<HomeFetchMovies>(_onFetchMovies);
+    on<HomeRefreshMovies>(_onRefreshMovies);
+    on<HomeLoadMoreMovies>(_onLoadMoreMovies);
   }
 
-  void refresh() {
-    _itemsController.sink.add(_generateItems());
+  Future<void> _onFetchMovies(HomeFetchMovies event, Emitter<HomeState> emit) async {
+    emit(HomeLoading());
+    try {
+      final movies = await movieRepository.fetchMovies(type: event.type);
+      _hasMoreMovies = movies.length > _pageSize;
+      emit(HomeLoaded(movies.take(_pageSize).toList()));
+    } catch (e) {
+      emit(HomeError(e.toString()));
+    }
   }
 
-  void loadMore() {
-    final currentItems = _itemsController.value;
-    final moreItems = _generateItems(start: currentItems.length);
-    _itemsController.sink.add(currentItems + moreItems);
+  Future<void> _onRefreshMovies(HomeRefreshMovies event, Emitter<HomeState> emit) async {
+    _currentPage = 1;
+    _hasMoreMovies = true;
+    try {
+      final movies = await movieRepository.fetchMovies(type: event.type);
+      _hasMoreMovies = movies.length > _pageSize;
+      emit(HomeLoaded(movies.take(_pageSize).toList()));
+    } catch (e) {
+      emit(HomeError(e.toString()));
+    }
   }
 
-  List<String> _generateItems({int start = 0}) {
-    return List.generate(10, (index) => 'Item ${start + index + 1}');
-  }
+  Future<void> _onLoadMoreMovies(HomeLoadMoreMovies event, Emitter<HomeState> emit) async {
+    if (state is HomeLoaded && _hasMoreMovies) {
+      final currentState = state as HomeLoaded;
+      _currentPage++;
+      try {
+        final newMovies = await movieRepository.fetchMovies(type: event.type);
+        final fetchedMovies = newMovies.skip((_currentPage - 1) * _pageSize).take(_pageSize).toList();
 
-  void dispose() {
-    _itemsController.close();
+        if (fetchedMovies.isEmpty) {
+          _hasMoreMovies = false;
+          emit(HomeLoaded(List.from(currentState.movies)..addAll(fetchedMovies)));
+        } else {
+          emit(HomeLoaded(List.from(currentState.movies)..addAll(fetchedMovies)));
+        }
+      } catch (e) {
+        emit(HomeError(e.toString()));
+      }
+    }
   }
 }

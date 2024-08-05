@@ -1,32 +1,34 @@
 import 'package:equatable/equatable.dart';
 
-sealed class LoginState extends Equatable {
-  const LoginState();
+sealed class AuthState extends Equatable {
+  const AuthState();
 
   @override
   List<Object> get props => [];
 }
 
-class LoginInitial extends LoginState {}
+class AuthLoginInitial extends AuthState {}
 
-class LoginInProgress extends LoginState {}
+class AuthLoginInProgress extends AuthState {}
 
-class LoginSuccess extends LoginState {}
+class AuthLoginSuccess extends AuthState {}
 
-class LoginFailure extends LoginState {
+class AuthLogoutSuccess extends AuthState {}
+
+class AuthLoginFailure extends AuthState {
   final String error;
 
-  const LoginFailure(this.error);
+  const AuthLoginFailure(this.error);
 
   @override
   List<Object> get props => [error];
 }
 
-class LoginFailureInvalidEmail extends LoginFailure {
-  const LoginFailureInvalidEmail() : super('Email must be in the correct email format.');
+class AuthLoginFailureInvalidEmail extends AuthLoginFailure {
+  const AuthLoginFailureInvalidEmail() : super('Email must be in the correct email format.');
 }
 
-class LoginFailureInvalidPassword extends LoginFailure {
-  const LoginFailureInvalidPassword() : super('Passwords must be at least 6 characters long, '
+class AuthLoginFailureInvalidPassword extends AuthLoginFailure {
+  const AuthLoginFailureInvalidPassword() : super('Passwords must be at least 6 characters long, '
       'contain at least 1 digit, 1 lowercase letter, and 1 uppercase letter');
 }
