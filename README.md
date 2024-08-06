@@ -21,7 +21,6 @@ The api is
    ```
 
  ● Pull to Refresh: Allow users to refresh the list of movies by pulling down on the screen.<br>
- ● Pull to Refresh: Allow users to refresh the list of movies by pulling down on the screen.<br>
  ● Load More Items: Load additional movies when the user scrolls down (pagination).<br>
 
 ## Installation
