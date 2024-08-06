@@ -12,7 +12,7 @@ This Flutter project is a new testing application. It includes basic features fo
  ● Store data using the Shared Preferences plugin<br>
  
 ## Functions
-Login/Logout: using [Shared Preferences]([https://sampleapis.com/](https://pub.dev/packages/shared_preferences)) to save/remove login info.<br>
+Login/Logout: using [Shared Preferences](https://sampleapis.com/](https://pub.dev/packages/shared_preferences)) to save/remove login info.<br>
 Home Screen: <br>
  ● Display a list view of movies which are called from api of [Sample APIs](https://sampleapis.com/)<br>
 The api is 
