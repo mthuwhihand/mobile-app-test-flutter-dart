@@ -13,14 +13,14 @@ class AuthRepository extends IAuthRepository {
 
   @override
   Future<bool> login({required String email, required String password}) async {
-    // Đọc tệp JSON từ thư mục assets
+    // Read JSON from assets
     final String response = await rootBundle.loadString('assets/mock/mock_users.json');
     final List<dynamic> data = json.decode(response);
 
-    // Kiểm tra email và mật khẩu
+    // Check email and password
     for (var user in data) {
       if (user['email'] == email && user['password'] == password) {
-        // Lưu email để chỉ định người dùng đã đăng nhập
+        // Save email using SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(_loggedInEmailKey, email);
         return true;
@@ -31,7 +31,7 @@ class AuthRepository extends IAuthRepository {
 
   @override
   Future<void> logout() async {
-    // Xóa email đã lưu
+    // Remove saved email
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_loggedInEmailKey);
   }

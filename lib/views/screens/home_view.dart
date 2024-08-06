@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../blocs/home_bloc/home_bloc.dart';
-import '../../blocs/home_bloc/home_event.dart';
-import '../../blocs/home_bloc/home_state.dart';
-import '../../repositories/movie_repository.dart';
-import '../../blocs/auth_bloc/auth_bloc.dart';
-import '../../blocs/auth_bloc/auth_event.dart';
+import '../../../blocs/home_bloc/home_bloc.dart';
+import '../../../blocs/home_bloc/home_event.dart';
+import '../../../blocs/home_bloc/home_state.dart';
+import '../../../repositories/movie_repository.dart';
+import '../../../../blocs/auth_bloc/auth_bloc.dart';
+import '../../../blocs/auth_bloc/auth_event.dart';
 import '../widgets/network_image_with_fallback.dart';
 
 class HomeView extends StatelessWidget {
   final String type;
-  final String placeholderImage = 'assets/imgs/placeholder.jpg';
+  final String placeholderImage = 'assets/imgs/placeholder.jpg';//placeholder Image for error image from url
 
-  const HomeView({super.key, this.type = 'animation'});
+  const HomeView({super.key, this.type = 'animation'});//Fetch api movie type = animation
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +24,7 @@ class HomeView extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
+              tooltip: 'Log out',
               onPressed: () {
                 context.read<AuthBloc>().add(const AuthLogoutRequestedEvent());
                 Navigator.pushReplacementNamed(context, '/login');
@@ -48,16 +49,43 @@ class HomeView extends StatelessWidget {
                         context.read<HomeBloc>().add(HomeLoadMoreMovies(type));
                         return const Center(child: CircularProgressIndicator());
                       } else {
-                        return const Center(child: Text('That\'s all'));
+                        return const Center(
+                          child: Text(
+                            '- That\'s all -',
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        );
                       }
                     }
                     final movie = state.movies[index];
-                    return ListTile(
-                      leading: NetworkImageWithFallback(
-                        imageUrl: movie.posterURL,
-                        placeholderAsset: placeholderImage,
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 80.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          children: [
+                            NetworkImageWithFallback(
+                              // using NetworkImageWithFallback widget to handle image error
+                              // when movie.posterURL is error url or not found image or other error
+                              imageUrl: movie.posterURL,
+                              placeholderAsset: placeholderImage,
+                              height: 222,
+                              width: 150,
+                              fit: BoxFit.cover,
+                            ),
+                            const SizedBox(height: 12.0),
+                            Center(
+                              child: Text(
+                                movie.title,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      title: Text(movie.title),
                     );
                   },
                 ),

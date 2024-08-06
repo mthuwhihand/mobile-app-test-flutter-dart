@@ -8,10 +8,10 @@ import 'views/screens/home_view.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Khởi tạo AuthRepository
+  // Initialize AuthRepository
   final authRepository = AuthRepository();
 
-  // Kiểm tra trạng thái đăng nhập
+  // Check isLoggedIn
   final isLoggedIn = await authRepository.isLoggedIn();
 
   runApp(
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   final bool isLoggedIn;
   final AuthRepository authRepository;
 
-  MyApp({required this.isLoggedIn, required this.authRepository});
+  const MyApp({super.key, required this.isLoggedIn, required this.authRepository});
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +31,35 @@ class MyApp extends StatelessWidget {
       create: (context) => AuthBloc(authRepository: authRepository),
       child: MaterialApp(
         title: 'Test App',
-        theme: ThemeData(
-          primarySwatch: Colors.pink,
+        theme: ThemeData.dark().copyWith(
+          primaryColor: Colors.white,
+          appBarTheme: const AppBarTheme(
+            color: Colors.black54,
+          ),
+          scaffoldBackgroundColor: Colors.black54,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black87,
+            ),
+          ),
+          inputDecorationTheme: const InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white12,
+            labelStyle: TextStyle(color: Colors.white),
+            hintStyle: TextStyle(color: Colors.white70),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white54),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white),
+            ),
+            border: OutlineInputBorder(),
+          ),
         ),
-        home: isLoggedIn ? const HomeView() : LoginView(),
+        home: isLoggedIn ? const HomeView() : const LoginView(),
         routes: {
-          '/login': (context) => LoginView(),
+          '/login': (context) => const LoginView(),
           '/home': (context) => const HomeView(),
         },
       ),

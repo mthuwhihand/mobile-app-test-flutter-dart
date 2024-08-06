@@ -1,35 +1,22 @@
 import 'package:equatable/equatable.dart';
 
 abstract class HomeEvent extends Equatable {
-  const HomeEvent();
+  const HomeEvent(this.type);
+
+  final String type;
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [type];
 }
 
 class HomeFetchMovies extends HomeEvent {
-  final String type;
-
-  const HomeFetchMovies(this.type);
-
-  @override
-  List<Object> get props => [type];
+  const HomeFetchMovies(super.type);
 }
 
 class HomeRefreshMovies extends HomeEvent {
-  final String type;
-
-  const HomeRefreshMovies(this.type);
-
-  @override
-  List<Object> get props => [type];
+  const HomeRefreshMovies(super.type);
 }
 
 class HomeLoadMoreMovies extends HomeEvent {
-  final String type;
-
-  const HomeLoadMoreMovies(this.type);
-
-  @override
-  List<Object> get props => [type];
+  const HomeLoadMoreMovies(super.type);
 }

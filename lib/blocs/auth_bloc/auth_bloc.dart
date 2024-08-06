@@ -6,8 +6,8 @@ import '../../utils/validators.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
-  bool hasInvalidEmailError = false;
-  bool hasInvalidPasswordError = false;
+  bool hasInvalidEmailError = false;// Flag to indicate if there is an invalid email error
+  bool hasInvalidPasswordError = false;// Flag to indicate if there is an invalid password error
 
   AuthBloc({required this.authRepository}) : super(AuthLoginInitial()) {
     on<AuthLoginEmailChangedEvent>(_onAuthLoginEmailChanged);
@@ -16,6 +16,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogoutRequestedEvent>(_onAuthLogoutRequestedEvent);
   }
 
+  // Handle email change event and emit appropriate states
   void _onAuthLoginEmailChanged(AuthLoginEmailChangedEvent event, Emitter<AuthState> emit) {
     if (hasInvalidEmailError) {
       if (!Validators.isValidEmail(event.email)) {
@@ -26,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  // Handle password change event and emit appropriate states
   void _onAuthLoginPasswordChanged(AuthLoginPasswordChangedEvent event, Emitter<AuthState> emit) {
     if (hasInvalidPasswordError) {
       if (!Validators.isValidPassword(event.password)) {
@@ -36,46 +38,50 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  // Handle login submission event and perform authentication
   void _onAuthLoginSubmittedEvent(AuthLoginSubmittedEvent event, Emitter<AuthState> emit) async {
-    emit(AuthLoginInProgress());
+    emit(AuthLoginInProgress());// Emit loading state to show loading circle
 
-    // Validate email và password trước khi gọi authenticationRepository
+    // Validate email and password before calling authRepository
     if (!Validators.isValidEmail(event.email)) {
       hasInvalidEmailError = true;
-      emit(const AuthLoginFailureInvalidEmail());
+      emit(const AuthLoginFailureInvalidEmail());// Emit failure state for invalid email
       return;
     }
 
     if (!Validators.isValidPassword(event.password)) {
       hasInvalidPasswordError = true;
-      emit(const AuthLoginFailureInvalidPassword());
+      emit(const AuthLoginFailureInvalidPassword());// Emit failure state for invalid password
       return;
     }
 
-    // Delay for 2 seconds before proceeding
-    await Future.delayed(const Duration(seconds: 2));
+    // Delay for 1 seconds before proceeding
+    await Future.delayed(const Duration(seconds: 1));
     try {
       final success = await authRepository.login(email: event.email, password: event.password);
       if (success) {
-        emit(AuthLoginSuccess());
+        emit(AuthLoginSuccess());// Emit success state if login is successful
       } else {
-        emit(const AuthLoginFailure('Invalid email or password'));
+        emit(const AuthLoginFailure('Invalid email or password'));// Emit failure state for invalid credentials
       }
     } catch (error) {
-      emit(AuthLoginFailure(error.toString()));
+      emit(AuthLoginFailure(error.toString()));// Emit failure state if an exception occurs
     }
   }
-  void _onAuthLogoutRequestedEvent(AuthLogoutRequestedEvent event, Emitter<AuthState> emit) async {
-    emit(AuthLoginInProgress());
 
-    // Delay for 2 seconds before proceeding
-    await Future.delayed(const Duration(seconds: 2));
+  // Handle logout request event and perform logout
+  void _onAuthLogoutRequestedEvent(AuthLogoutRequestedEvent event, Emitter<AuthState> emit) async {
+    emit(AuthLoginInProgress());// Emit loading state to show loading circle
+
+    // Delay for 1 seconds before proceeding
+    await Future.delayed(const Duration(seconds: 1));
 
     try {
       await authRepository.logout();
-      emit(AuthLogoutSuccess());
+      emit(AuthLogoutSuccess());// Emit success state if logout is successful
     } catch (error) {
-      emit(AuthLoginFailure(error.toString()));
+      emit(AuthLoginFailure(error.toString()));// Emit an error state if an exception occurs,
+      // here we use the same error state with AuthLoginState: Failure
     }
   }
 }
