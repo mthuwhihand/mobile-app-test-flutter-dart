@@ -5,23 +5,24 @@
 This Flutter project is a new testing application. It includes basic features for testing and developing mobile applications using Flutter.
 
 ## Technical
- ● Using Flutter, Dart.
- ● Use the MVVM pattern.
- ● Manage state with BLoC.
- ● Store data using the Shared Preferences plugin
 
+ ● Using Flutter, Dart.<br>
+ ● Use the MVVM pattern.<br>
+ ● Manage state with BLoC.<br>
+ ● Store data using the Shared Preferences plugin<br>
+ 
 ## Functions
-Login/Logout: using [Shared Preferences]([https://sampleapis.com/](https://pub.dev/packages/shared_preferences)) to save/remove login info.
-Home Screen: 
- ● Display a list view of movies which are called from api of [Sample APIs](https://sampleapis.com/)
+Login/Logout: using [Shared Preferences]([https://sampleapis.com/](https://pub.dev/packages/shared_preferences)) to save/remove login info.<br>
+Home Screen: <br>
+ ● Display a list view of movies which are called from api of [Sample APIs](https://sampleapis.com/)<br>
 The api is 
    ```
    https://api.sampleapis.com/movies/animation
    ```
 
- ● Pull to Refresh: Allow users to refresh the list of movies by pulling down on the screen.
- ● Pull to Refresh: Allow users to refresh the list of movies by pulling down on the screen.
- ● Load More Items: Load additional movies when the user scrolls down (pagination).
+ ● Pull to Refresh: Allow users to refresh the list of movies by pulling down on the screen.<br>
+ ● Pull to Refresh: Allow users to refresh the list of movies by pulling down on the screen.<br>
+ ● Load More Items: Load additional movies when the user scrolls down (pagination).<br>
 
 ## Installation
 
